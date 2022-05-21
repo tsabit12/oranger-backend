@@ -1,7 +1,8 @@
 {
   "name" : "html2pdf/codeigniter",
   "require": {
-    "dompdf/dompdf": "^0.8.3"
+    "dompdf/dompdf": "^0.8.3",
+    "firebase/php-jwt": "^6.2"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "3.*"
