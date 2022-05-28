@@ -1,7 +1,7 @@
 <?php
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET');
-header('Access-Control-Allow-Headers: Authorization, Content-Length, X-API-KEY');
+header('Access-Control-Allow-Headers: Authorization, Content-Length, X-API-KEY, X-USER');
 
 class Credential extends CI_Controller
 {
