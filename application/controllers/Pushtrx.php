@@ -45,7 +45,7 @@ class Pushtrx extends REST_Controller {
           }
   
           $this->db->db_debug = FALSE; 
-          $add = $this->db->insert_batch('KINERJA_ANTARAN_KEMITRAAN_PID_API', $insert);
+          $add = $this->db->insert_batch('kinerja_antaran_kemitraan_pid_api', $insert);
   
           if($add){
               if($this->db->affected_rows() > 0){

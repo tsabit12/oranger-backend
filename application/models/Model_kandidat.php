@@ -2,21 +2,19 @@
 class Model_kandidat extends CI_Model {
      public function totalRows(){
           $this->db->from('t_mitra');
-          $this->db->where(array(
-               'status' => 'S1',
-               'jabatan' => 'K01'
-          ));
+          $this->db->where('jabatan','K01');
+          $this->db->where_in('status', ['S1','S2','S3']);
 
           return $this->db->get()->num_rows();
      }
 
      public function data($page, $limit){
-          $this->db->select('username, id_mitra, nama_mitra, alamat, no_ktp, tempat_lahir, tanggal_lahir, jenis_kelamin, agama, no_hp, email, kantor, npwp, alamat_domisili, status_kawin');
-          $this->db->from('t_mitra');
-          $this->db->where(array(
-               'status' => 'S1',
-               'jabatan' => 'K01'
-          ));
+          $this->db->select('a.username, a.id_mitra, a.nama_mitra, a.alamat, a.no_ktp, a.tempat_lahir, a.tanggal_lahir');
+          $this->db->select('a.jenis_kelamin, a.agama, a.no_hp, a.email, a.kantor, a.npwp, a.alamat_domisili, b.keterangan as status, a.status as statusid');
+          $this->db->from('t_mitra a');
+          $this->db->join('r_mitrastatus b', 'a.status = b.statusid');
+          $this->db->where('jabatan','K01');
+          $this->db->where_in('a.status', ['S1','S2','S3']);
 
           $this->db->limit($limit, $page);
           $this->db->order_by("nama_mitra", "asc");
@@ -54,7 +52,7 @@ class Model_kandidat extends CI_Model {
                'nilai' => $payload['nilai']
           ));
 
-          if($this->db->affected_rows() > 0){
+          if($this->db->affected_rows() >= 0){
                $result['success'] = true;
           }
 
@@ -91,14 +89,30 @@ class Model_kandidat extends CI_Model {
           return $result;
      }
 
-     public function tidaklulus($body){
+     public function review($body){
           $result['success'] = false;
+          $nilai = json_decode($body['nilai'], true);
 
-          $this->db->where('username', $body['username']);
-          $this->db->update('t_mitra', array( 'status' => 'S3' ));
+          if(count($nilai) > 0){
+               $listnilai = array();
+               
+               foreach($nilai as $key){
+                    $listnilai[] = array(
+                         'berkasid' => $key['berkasid'],
+                         'nilai' => $key['value'],
+                         'username' => $body['username']
+                    );
+               }
 
-          if($this->db->affected_rows() > 0){
-               $result['success'] = true;
+               $this->db->insert_batch('t_berkas_mitra', $listnilai);
+               if($this->db->affected_rows() > 0){
+                    $this->db->where('username', $body['username']);
+                    $this->db->update('t_mitra', array( 'status' => $body['status'] ));
+
+                    if($this->db->affected_rows() > 0){
+                         $result['success'] = true;
+                    }
+               }
           }
 
           return $result;

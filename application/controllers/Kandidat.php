@@ -130,14 +130,16 @@ class Kandidat extends  REST_Controller{
           $this->response($response, 200);
      }
 
-     public function tidaklulus_post(){
+     public function review_post(){
           $response['status']      = false;
           $response['message']     = 'Internal server error';
 
           $payload = $this->post();
           if(isset($payload['username'])){
                $config = array(
-                    array('field' => 'username', 'label' => 'Username', 'rules' => 'required|max_length[30]')
+                    array('field' => 'username', 'label' => 'Username', 'rules' => 'required|max_length[30]'),
+                    array('field' => 'nilai', 'label' => 'nilai', 'rules' => 'required'),
+                    array('field' => 'status', 'label' => 'Label', 'rules' => 'required|max_length[2]')
                );
                $this->form_validation->set_data($payload);
                $this->form_validation->set_rules($config);
@@ -146,7 +148,7 @@ class Kandidat extends  REST_Controller{
                     $keys                = array_keys($msg_arr);
                     $response['message'] = $msg_arr[$keys[0]];
                }else{
-                    $post = $this->model_kandidat->tidaklulus($payload);
+                    $post = $this->model_kandidat->review($payload);
                     if($post['success']){
                          $response['status']      = true;
                          $response['message']     = 'Ok';    
