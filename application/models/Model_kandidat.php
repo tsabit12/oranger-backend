@@ -29,7 +29,10 @@ class Model_kandidat extends CI_Model {
           $this->db->select('a.berkasid, a.file_name, b.keterangan, a.nilai');
           $this->db->from('t_berkas_mitra a');
           $this->db->join('r_berkas b', 'a.berkasid = b.berkasid');
-          $this->db->where('a.username', $username);
+          $this->db->where(array(
+               'a.username' => $username,
+               'b.with_file' => 1
+          ));
 
           $q = $this->db->get();
           if($q->num_rows() > 0){
@@ -104,7 +107,13 @@ class Model_kandidat extends CI_Model {
                     );
                }
 
-               $this->db->insert_batch('t_berkas_mitra', $listnilai);
+               if($body['fromstat'] == 'S3'){
+                    $this->db->where('username', $body['username']);
+                    $this->db->update_batch('t_berkas_mitra', $listnilai, 'berkasid');
+               }else{
+                    $this->db->insert_batch('t_berkas_mitra', $listnilai);
+               }
+
                if($this->db->affected_rows() > 0){
                     $this->db->where('username', $body['username']);
                     $this->db->update('t_mitra', array( 'status' => $body['status'] ));

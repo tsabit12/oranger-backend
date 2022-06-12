@@ -139,7 +139,8 @@ class Kandidat extends  REST_Controller{
                $config = array(
                     array('field' => 'username', 'label' => 'Username', 'rules' => 'required|max_length[30]'),
                     array('field' => 'nilai', 'label' => 'nilai', 'rules' => 'required'),
-                    array('field' => 'status', 'label' => 'Label', 'rules' => 'required|max_length[2]')
+                    array('field' => 'status', 'label' => 'Label', 'rules' => 'required|max_length[2]'),
+                    array('field' => 'fromstat', 'label' => 'fromstat', 'rules' => 'required|max_length[2]'),
                );
                $this->form_validation->set_data($payload);
                $this->form_validation->set_rules($config);
