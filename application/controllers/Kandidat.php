@@ -26,6 +26,9 @@ class Kandidat extends  REST_Controller{
 
           $data     = $this->get();
           $limit    = 10;
+          if(isset($data['limit'])){
+               $limit = $data['limit'];
+          }
 
           if(isset($data['page'])){
                $response['total']       = $this->model_kandidat->totalRows();
