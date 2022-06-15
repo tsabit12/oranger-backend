@@ -33,7 +33,7 @@ class Pks extends REST_Controller {
           }
 
           if(isset($data['page'])){
-               $response['total']       = $this->model_pks->totalRows();
+               $response['total']       = $this->model_pks->totalRows($data);
                $response['data']        = $this->model_pks->data($data, $limit);
                $response['status']      = true;
                $response['message']     = 'Ok'; 

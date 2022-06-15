@@ -6,8 +6,18 @@ class Model_pks extends CI_Model {
 
           return $q['currentdate_value'];
      }
-     public function totalRows(){
-          $this->db->from('t_pks');
+     public function totalRows($payload){
+          $this->db->from('t_pks a');
+          $this->db->join('t_mitra b', 'a.id_mitra = b.username');
+          if(isset($payload['nik'])) $this->db->where('b.no_ktp', $payload['nik']);
+          if(isset($payload['status'])){
+               $curdate = $this->getcurdate();
+               if($payload['status'] == 'P01'){ //aktif
+                    $this->db->where('a.tgl_selesai >=', $curdate);
+               }else if($payload['status'] == 'P02'){
+                    $this->db->where('a.tgl_selesai <=', $curdate);
+               }
+          }
 
           return $this->db->get()->num_rows();
      }
