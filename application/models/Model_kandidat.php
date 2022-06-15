@@ -1,20 +1,36 @@
 <?php
 class Model_kandidat extends CI_Model {
-     public function totalRows(){
+     public function totalRows($payload){
           $this->db->from('t_mitra');
           $this->db->where('jabatan','K01');
-          $this->db->where_in('status', ['S1','S2','S3']);
+          if($payload['status'] == "S0"){
+               $this->db->where_in('status', ['S1','S2','S3']);
+          }else{
+               $this->db->where('status', $payload['status']);
+          }
+
+          if(isset($payload['fullname'])) $this->db->like('nama_mitra', $payload['fullname']);
+          if(isset($payload['nik'])) $this->db->where('no_ktp', $payload['nik']);
 
           return $this->db->get()->num_rows();
      }
 
-     public function data($page, $limit){
+     public function data($payload, $limit){
+          $page = (int)$payload['page'];
+
           $this->db->select('a.username, a.id_mitra, a.nama_mitra, a.alamat, a.no_ktp, a.tempat_lahir, a.tanggal_lahir');
           $this->db->select('a.jenis_kelamin, a.agama, a.no_hp, a.email, a.kantor, a.npwp, a.alamat_domisili, b.keterangan as status, a.status as statusid');
           $this->db->from('t_mitra a');
           $this->db->join('r_mitrastatus b', 'a.status = b.statusid');
           $this->db->where('jabatan','K01');
-          $this->db->where_in('a.status', ['S1','S2','S3']);
+          if($payload['status'] == "S0"){
+               $this->db->where_in('a.status', ['S1','S2','S3']);
+          }else{
+               $this->db->where('a.status', $payload['status']);
+          }
+
+          if(isset($payload['fullname'])) $this->db->like('a.nama_mitra', $payload['fullname']);
+          if(isset($payload['nik'])) $this->db->where('a.no_ktp', $payload['nik']);
 
           $this->db->limit($limit, $page);
           $this->db->order_by("nama_mitra", "asc");

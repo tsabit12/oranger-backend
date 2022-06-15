@@ -31,8 +31,8 @@ class Kandidat extends  REST_Controller{
           }
 
           if(isset($data['page'])){
-               $response['total']       = $this->model_kandidat->totalRows();
-               $response['data']        = $this->model_kandidat->data((int)$data['page'], $limit);
+               $response['total']       = $this->model_kandidat->totalRows($data);
+               $response['data']        = $this->model_kandidat->data($data, $limit);
                $response['status']      = true;
                $response['message']     = 'Ok'; 
           }else{
