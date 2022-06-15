@@ -28,9 +28,13 @@ class Pks extends REST_Controller {
           $data     = $this->get();
           $limit    = 10;
 
+          if(isset($data['limit'])){
+               $limit = $data['limit'];
+          }
+
           if(isset($data['page'])){
                $response['total']       = $this->model_pks->totalRows();
-               $response['data']        = $this->model_pks->data((int)$data['page'], $limit);
+               $response['data']        = $this->model_pks->data($data, $limit);
                $response['status']      = true;
                $response['message']     = 'Ok'; 
           }else{
