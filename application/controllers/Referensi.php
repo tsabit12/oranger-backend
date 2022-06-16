@@ -67,5 +67,52 @@ class Referensi extends REST_Controller
 
 		 $this->response($res, 200);
 	}
+
+	public function berkas_put(){
+		$this->load->library('validatejwt');
+           $validate = $this->validatejwt->cek_token();
+           if($validate['isValid'] === FALSE){
+                echo json_encode(
+                     array(
+                          "status" => false,
+                          "message" => $validate['message']
+                     )
+                );
+                die();
+          }else{
+			$res['status']  = false;
+			$res['message'] = 'Internal server error';
+
+			$data = $this->put();
+			if(!isset($data['berkasid'])){
+				$res['message'] = 'Berkas ID is required';
+			}else{
+				$config = array(
+					array('field' => 'berkasid', 'label' => 'Berkas ID', 'rules' => 'required|max_length[3]|min_length[3]'),
+					array('field' => 'keterangan', 'label' => 'Deskripsi', 'rules' => 'required'),
+					array('field' => 'with_file', 'label' => 'File', 'rules' => 'required|integer')
+				);
+
+				$this->form_validation->set_data($data);
+				$this->form_validation->set_rules($config);
+
+				if($this->form_validation->run() === FALSE){
+					$msg_arr            = $this->form_validation->error_array();
+					$keys                = array_keys($msg_arr);
+					$res['message'] = $msg_arr[$keys[0]];
+				}else{
+					$upd = $this->model_referensi->updateBerkas($data);
+					if($upd['success']){
+						$res['status'] = true;
+						$res['message'] = "Ok";
+					}else{
+						$res['message'] = "UPDATE DATA GAGAL";
+					}
+				}
+			}
+
+			$this->response($res, 200);
+		}
+	}
 }
 ?>

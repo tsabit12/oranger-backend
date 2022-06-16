@@ -17,5 +17,21 @@ class Model_referensi extends CI_Model {
 
           return $this->db->get()->result_array();
      }
+
+     public function updateBerkas($payload){
+          $result['success'] = false;
+
+          $this->db->where('berkasid', $payload['berkasid']);
+          $this->db->update('r_berkas', array(
+               'keterangan' => $payload['keterangan'],
+               'with_file' => $payload['with_file']
+          ));
+
+          if($this->db->affected_rows() > 0){
+               $result['success'] = true;
+          }
+
+          return $result;
+     }
 }
 ?>
