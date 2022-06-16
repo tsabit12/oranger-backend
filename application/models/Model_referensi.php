@@ -33,5 +33,42 @@ class Model_referensi extends CI_Model {
 
           return $result;
      }
+
+     private function getlastidberkas(){
+          $this->db->select('RIGHT(berkasid, 2) as id');
+          $this->db->from('r_berkas');
+          $this->db->order_by('berkasid', 'DESC');
+          $this->db->limit(1, 0);
+
+          $q = $this->db->get();
+          if($q->num_rows() > 0){
+               $id = $q->row_array()['id'];
+               $id = $id + 1;
+               $id = str_pad($id, 2, '0', STR_PAD_LEFT);
+               return "B".$id;
+          }else{
+               return 'B01';
+          }
+     }
+
+     public function insertBerkas($payload){
+          $res['success'] = false;
+          $id  = $this->getlastidberkas();
+          
+          $add = array(
+               'berkasid' => $id,
+               'keterangan' => $payload['keterangan'],
+               'with_file' => $payload['with_file']
+          );
+
+          $this->db->insert('r_berkas', $add);
+
+          if($this->db->affected_rows() > 0){
+               $res['success']     = true;
+               $res['result']      = $add;
+          }
+
+          return $res;
+     }
 }
 ?>

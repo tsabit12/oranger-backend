@@ -89,7 +89,7 @@ class Referensi extends REST_Controller
 			}else{
 				$config = array(
 					array('field' => 'berkasid', 'label' => 'Berkas ID', 'rules' => 'required|max_length[3]|min_length[3]'),
-					array('field' => 'keterangan', 'label' => 'Deskripsi', 'rules' => 'required'),
+					array('field' => 'keterangan', 'label' => 'Deskripsi', 'rules' => 'required|max_length[50]'),
 					array('field' => 'with_file', 'label' => 'File', 'rules' => 'required|integer')
 				);
 
@@ -107,6 +107,53 @@ class Referensi extends REST_Controller
 						$res['message'] = "Ok";
 					}else{
 						$res['message'] = "UPDATE DATA GAGAL";
+					}
+				}
+			}
+
+			$this->response($res, 200);
+		}
+	}
+
+	public function berkas_post(){
+		$this->load->library('validatejwt');
+          $validate = $this->validatejwt->cek_token();
+          if($validate['isValid'] === FALSE){
+                echo json_encode(
+                     array(
+                          "status" => false,
+                          "message" => $validate['message']
+                     )
+                );
+                die();
+          }else{
+			$res['status']  = false;
+			$res['message'] = 'Internal server error';
+
+			$data = $this->post();
+			if(!isset($data['keterangan'])){
+				$res['message'] = 'Deskripsi is required';
+			}else{
+				$config = array(
+					array('field' => 'keterangan', 'label' => 'Deskripsi', 'rules' => 'required|max_length[50]'),
+					array('field' => 'with_file', 'label' => 'File', 'rules' => 'required|integer')
+				);
+
+				$this->form_validation->set_data($data);
+				$this->form_validation->set_rules($config);
+
+				if($this->form_validation->run() === FALSE){
+					$msg_arr            = $this->form_validation->error_array();
+					$keys                = array_keys($msg_arr);
+					$res['message'] = $msg_arr[$keys[0]];
+				}else{
+					$insert = $this->model_referensi->insertBerkas($data);
+					if($insert['success']){
+						$res['status'] 	= true;
+						$res['message'] 	= "Ok";
+						$res['inserted'] 	= $insert['result'];
+					}else{
+						$res['message'] = "INSERT DATA GAGAL";
 					}
 				}
 			}
